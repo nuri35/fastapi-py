@@ -1,8 +1,9 @@
-
 from fastapi import FastAPI, Body, Depends
-from app.model import PostSchema, UserSchema, UserLoginSchema
+from app.model import PostSchema, AccountSchema, UserLoginSchema
 from app.auth.auth_bearer import JWTBearer
 from app.auth.auth_handler import signJWT
+from app.auth.hash_password import get_password_hash
+from app.instance.object_instance import Object
 
 
 posts = [
@@ -35,52 +36,36 @@ def check_user(data: UserLoginSchema):
             return True
     return False
 
-
-# route handlers
-
-# testing
-@app.get("/", tags=["test"])
-def greet():
-    return {"hello": "world!."}
-
-
-# Get Posts
-@app.get("/posts", tags=["posts"])
-def get_posts():
-    return { "data": posts }
-
-
-@app.get("/posts/{id}", tags=["posts"])
-def get_single_post(id: int):
-    if id > len(posts):
-        return {
-            "error": "No such post with the supplied ID."
-        }
-
-    for post in posts:
-        if post["id"] == id:
-            return {
-                "data": post
-            }
+@app.get("/allUser", tags=["user"])
+async def add_post():
+    return users
 
 
 @app.post("/posts", dependencies=[Depends(JWTBearer())], tags=["posts"])
-def add_post(post: PostSchema):
+async def add_post(post: PostSchema):
     post.id = len(posts) + 1
     posts.append(post.dict())
     return {
         "data": "post added."
     }
+    
 
 
+# emaıl yolla link verify tokenı hesabı dogrulasın sonra logın olabılsın kısı
 @app.post("/user/signup", tags=["user"])
-def create_user(user: UserSchema = Body(...)):
-    users.append(user) # replace with db call, making sure to hash the password first
-    return signJWT(user.email)
+async def create_user(user: AccountSchema = Body(...)):
+    hash_password = get_password_hash(user.password)
+    user.password = hash_password
+    new_obj = Object()
+    new_obj.user = user
+    new_obj.isverified = True # similuate email verification
+    # users.append(new_obj)
+    # return signJWT(user.email)
+    return new_obj
 
 
 @app.post("/user/login", tags=["user"])
-def user_login(user: UserLoginSchema = Body(...)):
+async def user_login(user: UserLoginSchema = Body(...)):
     if check_user(user):
         return signJWT(user.email)
     return {
