@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+email-validator = "==1.1.2"
+pyjwt = "==1.7.1"
+python-decouple = "==3.3"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
