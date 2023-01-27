@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Body, Depends, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
-from app.model import PostSchema, AccountSchema, UserForgetPasswordSchema, UserLoginSchema, UserResetPasswordSchema
-from app.auth.auth_bearer import JWTBearer
-from app.auth.auth_handler import decodeJWT, resetLink, signJWT, verifyUrl
-from app.auth.hash_password import check_password, get_password_hash
-from app.instance.object_instance import Object
+from .schema_structure.model import PostSchema, AccountSchema, UserForgetPasswordSchema, UserLoginSchema, UserResetPasswordSchema
+from .auth_process.auth_bearer import JWTBearer
+from .auth_process.auth_handler import decodeJWT, resetLink, signJWT, verifyUrl
+from .auth_process.hash_password import check_password, get_password_hash
+from .instance.object_instance import Object
 
 
 
