@@ -101,3 +101,34 @@ class UserLoginSchema(BaseModel):
                 "password": "any"
             }
         }
+        
+        
+class UserForgetPasswordSchema(BaseModel):
+    email: EmailStr = Field(...)
+   
+   
+class UserResetPasswordSchema(BaseModel):
+    token: str = Field(...)
+    password: str = Field(...,  min_length=8, max_length=20)
+    @validator('password', always=True)
+    def validate_password_Sign(cls, value):
+        password = value
+        errors = ''
+        if not any(character.islower() for character in password):
+            errors += 'Password should contain at least one lowercase character.'
+        if not any(character.isupper() for character in password):
+            errors += 'Password should contain at least one uppercase character.'
+        if not any(character.isnumeric() for character in password):
+            errors += 'Password should contain at least one number character.'
+        if errors:
+            raise ValueError(errors)
+        
+        return value
+    password2: str = Field(...)
+    @validator('password2')
+    def passwords_match(cls, v, values, **kwargs):
+        if 'password' in values and v != values['password']:
+            raise ValueError('passwords do not match')
+        return v
+
+   
